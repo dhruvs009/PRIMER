@@ -532,6 +532,21 @@ def train(args):
         valid_dataloader = get_dataloader_summ(
             args, dataset, model.tokenizer, "validation", args.num_workers, False
         )
+
+    elif args.dataset_name == "watclaimcheck":
+        with open(args.data_path + "PRIMERA_TRAIN.jsonl", "r") as of:
+            all_lines = of.readlines()
+        dataset = [json.loads(l) for l in all_lines]
+        train_dataloader = get_dataloader_summ(
+            args, dataset, model.tokenizer, "train", args.num_workers, False
+        )
+        with open(args.data_path + "PRIMERA_VAL.jsonl", "r") as of:
+            all_lines = of.readlines()
+        dataset = [json.loads(l) for l in all_lines]
+        valid_dataloader = get_dataloader_summ(
+            args, dataset, model.tokenizer, "validation", args.num_workers, False
+        )
+
     trainer.fit(model, train_dataloader, valid_dataloader)
     if args.test_imediate:
         args.resume_ckpt = checkpoint_callback.best_model_path
@@ -584,6 +599,14 @@ def test(args):
         )
     elif args.dataset_name == "arxiv":
         with open(args.data_path + "test.txt", "r") as of:
+            all_lines = of.readlines()
+        dataset = [json.loads(l) for l in all_lines]
+        test_dataloader = get_dataloader_summ(
+            args, dataset, model.tokenizer, "test", args.num_workers, False
+        )
+
+    elif args.dataset_name == "watclaimcheck":
+        with open(args.data_path + "PRIMERA_TEST.jsonl", "r") as of:
             all_lines = of.readlines()
         dataset = [json.loads(l) for l in all_lines]
         test_dataloader = get_dataloader_summ(
@@ -780,7 +803,7 @@ if __name__ == "__main__":
     ####################
 
     args.acc_batch = args.accum_data_per_step // args.batch_size
-    args.data_path = os.path.join(args.data_path, args.dataset_name)
+    # args.data_path = os.path.join(args.data_path, args.dataset_name)
     if not os.path.exists(args.model_path):
         os.makedirs(args.model_path)
 

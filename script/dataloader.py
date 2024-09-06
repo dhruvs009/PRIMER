@@ -55,7 +55,7 @@ class SummarizationDataset(Dataset):
                 tgt, truncation=True, max_length=self.max_output_len
             )
         else:  # multi-doc setting
-            if self.dataset_name == "multi_news":
+            if self.dataset_name == "multi_news" or self.dataset_name == "watclaimcheck":
                 all_docs = entry["document"].split("|||||")[:-1]
                 for i, doc in enumerate(all_docs):
                     doc = doc.replace("\n", " ")
@@ -489,6 +489,7 @@ def get_dataloader_summ(
         or ("tac" in args.dataset_name)
         or args.dataset_name == "wcep"
         or args.dataset_name == "wikisum"
+        or args.dataset_name == "watclaimcheck"
     ):
         d = hf_datasets
     elif args.dataset_name == "arxiv":
